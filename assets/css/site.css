@@ -82,7 +82,7 @@ a { color: inherit; }
 .brand-row { display: flex; align-items: center; gap: 8px; }
 .brand-logo { width: 34px; height: 34px; object-fit: contain; }
 .brand-word { height: 22px; object-fit: contain; }
-.brand-sub  { height: 10px; object-fit: contain; margin-left: 0; margin-top: 2px; display: block; align-self: center; }
+.brand-sub  { height: 10px; object-fit: contain; margin-left: 0; margin-top: 2px; display: block; align-self: flex-start; }
 
 /* Nav */
 .site-nav {

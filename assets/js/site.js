@@ -16,154 +16,272 @@
   const preloaderBar = document.querySelector('[data-preloader-bar]');
   const preloaderPercent = document.querySelector('[data-preloader-percent]');
   const preloaderMessage = document.querySelector('[data-preloader-message]');
+  const preloaderShownKey = 'tectop-preloader-shown-v2';
+  const prefetchDoneKey = 'tectop-prefetch-done-v1';
+  const isHome = Boolean(preloader);
+  const shouldShowPreloader = isHome && !localStorage.getItem(preloaderShownKey);
+  const shouldPrefetch = isHome && !localStorage.getItem(prefetchDoneKey);
 
-  if (preloader && preloaderBar && preloaderPercent && preloaderMessage) {
-    const messages = [
-      'Carregando experiência...',
-      'Inicializando sistema...',
-      'Preparando interface...'
-    ];
+  const collectSameOriginHtmlLinks = () => {
+    const links = Array.from(document.querySelectorAll('a[href]'));
+    const urls = new Set();
+    links.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+        return;
+      }
+      try {
+        const url = new URL(href, window.location.href);
+        if (url.origin === window.location.origin && url.pathname.endsWith('.html')) {
+          urls.add(url.href);
+        }
+      } catch (_) {
+        // Ignore malformed URLs
+      }
+    });
+    return Array.from(urls);
+  };
 
-    let progress = 0;
-    let targetProgress = 12;
-    let messageIndex = 0;
-    let rafId = 0;
-    let completed = false;
-    let lastTick = 0;
-    let pageReady = false;
-    let assetsReady = false;
+  const prefetchAllRoutes = async () => {
+    const routeUrls = collectSameOriginHtmlLinks();
+    if (!routeUrls.length) {
+      return [];
+    }
 
-    document.body.classList.add('preloader-active');
+    const assetUrls = new Set();
+    const addAsset = (value, baseUrl) => {
+      if (!value) return;
+      try {
+        const url = new URL(value, baseUrl);
+        if (url.origin === window.location.origin) {
+          assetUrls.add(url.href);
+        }
+      } catch (_) {
+        // Ignore malformed URLs
+      }
+    };
 
-    const waitForImage = (img) => {
-      if (!img.hasAttribute('loading')) {
-        img.setAttribute('loading', 'eager');
-      } else if (img.getAttribute('loading') === 'lazy') {
-        img.setAttribute('loading', 'eager');
+    const htmlResponses = await Promise.all(routeUrls.map((url) => fetch(url, { cache: 'force-cache' }).catch(() => null)));
+    await Promise.all(htmlResponses.map(async (response, idx) => {
+      if (!response || !response.ok) return;
+      const html = await response.clone().text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const baseUrl = routeUrls[idx];
+      doc.querySelectorAll('link[rel="stylesheet"][href]').forEach((el) => addAsset(el.getAttribute('href'), baseUrl));
+      doc.querySelectorAll('script[src]').forEach((el) => addAsset(el.getAttribute('src'), baseUrl));
+      doc.querySelectorAll('img[src]').forEach((el) => addAsset(el.getAttribute('src'), baseUrl));
+      doc.querySelectorAll('source[srcset]').forEach((el) => {
+        const srcset = el.getAttribute('srcset') || '';
+        srcset.split(',').forEach((entry) => {
+          const candidate = entry.trim().split(' ')[0];
+          addAsset(candidate, baseUrl);
+        });
+      });
+    }));
+
+    const uniqueAssets = Array.from(assetUrls);
+    if (uniqueAssets.length) {
+      if ('caches' in window) {
+        try {
+          const cache = await caches.open('tectop-preload-v1');
+          await cache.addAll(uniqueAssets);
+        } catch (_) {
+          // Fall back to regular fetch if Cache API fails
+        }
       }
 
-      if (img.complete && img.naturalWidth > 0) {
-        return Promise.resolve();
-      }
+      await Promise.all(uniqueAssets.map((url) => fetch(url, { cache: 'force-cache' }).catch(() => null)));
+    }
 
+    return uniqueAssets;
+  };
+
+  const prefetchPromise = shouldPrefetch ? prefetchAllRoutes() : Promise.resolve();
+  const preloadImagesFromAssets = async (assets) => {
+    const imageUrls = assets.filter((url) => /\.(png|jpe?g|webp|gif|svg)(\\?|#|$)/i.test(url));
+    if (!imageUrls.length) return;
+    await Promise.all(imageUrls.map((url) => {
       return new Promise((resolve) => {
+        const img = new Image();
         const done = () => resolve();
         img.addEventListener('load', done, { once: true });
         img.addEventListener('error', done, { once: true });
+        img.src = url;
       });
-    };
+    }));
+  };
 
-    const waitForPageImages = () => {
-      const images = Array.from(document.images);
-      if (!images.length) {
-        return Promise.resolve();
-      }
-
-      return Promise.all(images.map(waitForImage));
-    };
-
-    const updateVisuals = (value) => {
-      const bounded = Math.max(0, Math.min(100, value));
-      preloaderBar.style.width = `${bounded}%`;
-      preloaderPercent.textContent = `${Math.round(bounded)}%`;
-    };
-
-    const advanceMessage = () => {
-      messageIndex = (messageIndex + 1) % messages.length;
-      preloaderMessage.textContent = messages[messageIndex];
-    };
-
-    const step = (timestamp) => {
-      if (!lastTick) {
+  if (preloader && preloaderBar && preloaderPercent && preloaderMessage) {
+    if (!shouldShowPreloader) {
+      preloader.classList.add('is-gone');
+    } else {
+      const messages = [
+        'Carregando experiência...',
+        'Inicializando sistema...',
+        'Preparando interface...'
+      ];
+  
+      let progress = 0;
+      let targetProgress = 12;
+      let messageIndex = 0;
+      let rafId = 0;
+      let completed = false;
+      let lastTick = 0;
+      let pageReady = false;
+      let assetsReady = false;
+      let routesReady = !shouldPrefetch;
+  
+      document.body.classList.add('preloader-active');
+  
+      const waitForImage = (img) => {
+        if (!img.hasAttribute('loading')) {
+          img.setAttribute('loading', 'eager');
+        } else if (img.getAttribute('loading') === 'lazy') {
+          img.setAttribute('loading', 'eager');
+        }
+  
+        if (img.complete && img.naturalWidth > 0) {
+          return Promise.resolve();
+        }
+  
+        return new Promise((resolve) => {
+          const done = () => resolve();
+          img.addEventListener('load', done, { once: true });
+          img.addEventListener('error', done, { once: true });
+        });
+      };
+  
+      const waitForPageImages = () => {
+        const images = Array.from(document.images);
+        if (!images.length) {
+          return Promise.resolve();
+        }
+  
+        return Promise.all(images.map(waitForImage));
+      };
+  
+      const updateVisuals = (value) => {
+        const bounded = Math.max(0, Math.min(100, value));
+        preloaderBar.style.width = `${bounded}%`;
+        preloaderPercent.textContent = `${Math.round(bounded)}%`;
+      };
+  
+      const advanceMessage = () => {
+        messageIndex = (messageIndex + 1) % messages.length;
+        preloaderMessage.textContent = messages[messageIndex];
+      };
+  
+      const step = (timestamp) => {
+        if (!lastTick) {
+          lastTick = timestamp;
+        }
+        const delta = timestamp - lastTick;
         lastTick = timestamp;
-      }
-      const delta = timestamp - lastTick;
-      lastTick = timestamp;
-
-      const smoothing = completed ? 0.14 : 0.05;
-      progress += (targetProgress - progress) * smoothing * (delta / 16.6);
-
-      if (Math.abs(targetProgress - progress) < 0.25) {
-        progress = targetProgress;
-      }
-
-      if (!completed && progress < 92) {
-        targetProgress = Math.min(92, targetProgress + 0.08 * (delta / 16.6));
-      }
-
-      updateVisuals(progress);
-
-      if (completed && progress >= 100) {
-        finalizePreloader();
-        return;
-      }
-
-      rafId = window.requestAnimationFrame(step);
-    };
-
-    const finalizePreloader = () => {
-      clearPreloaderTimers();
-      document.removeEventListener('readystatechange', syncReadystate);
-      preloader.classList.add('is-hidden');
-      document.body.classList.remove('preloader-active');
-      window.setTimeout(() => {
-        preloader.classList.add('is-gone');
-      }, 760);
-    };
-
-    const completeProgress = () => {
-      if (!pageReady || !assetsReady) {
-        return;
-      }
-      completed = true;
-      targetProgress = 100;
-      preloaderMessage.textContent = 'Ambiente pronto';
-    };
-
-    const syncReadystate = () => {
-      if (document.readyState === 'interactive') {
-        targetProgress = Math.max(targetProgress, 70);
-      }
-      if (document.readyState === 'complete') {
+  
+        const smoothing = completed ? 0.14 : 0.05;
+        progress += (targetProgress - progress) * smoothing * (delta / 16.6);
+  
+        if (Math.abs(targetProgress - progress) < 0.25) {
+          progress = targetProgress;
+        }
+  
+        if (!completed && progress < 92) {
+          targetProgress = Math.min(92, targetProgress + 0.08 * (delta / 16.6));
+        }
+  
+        updateVisuals(progress);
+  
+        if (completed && progress >= 100) {
+          finalizePreloader();
+          return;
+        }
+  
+        rafId = window.requestAnimationFrame(step);
+      };
+  
+      const finalizePreloader = () => {
+        clearPreloaderTimers();
+        document.removeEventListener('readystatechange', syncReadystate);
+        preloader.classList.add('is-hidden');
+        document.body.classList.remove('preloader-active');
+        window.setTimeout(() => {
+          preloader.classList.add('is-gone');
+        }, 760);
+      };
+  
+      const completeProgress = () => {
+        if (!pageReady || !assetsReady || !routesReady) {
+          return;
+        }
+        completed = true;
+        targetProgress = 100;
+        preloaderMessage.textContent = 'Ambiente pronto';
+      };
+  
+      const syncReadystate = () => {
+        if (document.readyState === 'interactive') {
+          targetProgress = Math.max(targetProgress, 70);
+        }
+        if (document.readyState === 'complete') {
+          pageReady = true;
+          completeProgress();
+        }
+      };
+  
+      const messageTimer = window.setInterval(() => {
+        if (!completed) {
+          advanceMessage();
+        }
+      }, 1350);
+  
+      const clearPreloaderTimers = () => {
+        window.clearInterval(messageTimer);
+        window.cancelAnimationFrame(rafId);
+      };
+  
+      window.addEventListener('beforeunload', clearPreloaderTimers, { once: true });
+      document.addEventListener('readystatechange', syncReadystate);
+      window.addEventListener('load', () => {
         pageReady = true;
         completeProgress();
-      }
-    };
-
-    const messageTimer = window.setInterval(() => {
-      if (!completed) {
-        advanceMessage();
-      }
-    }, 1350);
-
-    const clearPreloaderTimers = () => {
-      window.clearInterval(messageTimer);
-      window.cancelAnimationFrame(rafId);
-    };
-
-    window.addEventListener('beforeunload', clearPreloaderTimers, { once: true });
-    document.addEventListener('readystatechange', syncReadystate);
-    window.addEventListener('load', () => {
-      pageReady = true;
-      completeProgress();
-    }, { once: true });
-
-    waitForPageImages()
+      }, { once: true });
+  
+      waitForPageImages()
+        .catch(() => undefined)
+        .finally(() => {
+          assetsReady = true;
+          targetProgress = Math.max(targetProgress, 95);
+          completeProgress();
+        });
+  
+    prefetchPromise
+      .then((assets) => preloadImagesFromAssets(assets || []))
       .catch(() => undefined)
       .finally(() => {
+        routesReady = true;
+        targetProgress = Math.max(targetProgress, 98);
+        localStorage.setItem(prefetchDoneKey, '1');
+        completeProgress();
+      });
+  
+      window.setTimeout(() => {
         assetsReady = true;
         targetProgress = Math.max(targetProgress, 95);
         completeProgress();
-      });
-
+      }, 12000);
+  
     window.setTimeout(() => {
-      assetsReady = true;
-      targetProgress = Math.max(targetProgress, 95);
+      routesReady = true;
+      targetProgress = Math.max(targetProgress, 98);
+      localStorage.setItem(prefetchDoneKey, '1');
       completeProgress();
-    }, 12000);
-
-    syncReadystate();
-    rafId = window.requestAnimationFrame(step);
+    }, 24000);
+  
+      syncReadystate();
+      rafId = window.requestAnimationFrame(step);
+      localStorage.setItem(preloaderShownKey, '1');
+    }
   }
 
   /* ── Navbar scroll class ── */
@@ -207,58 +325,6 @@
       a.classList.add('active');
     }
   });
-
-  /* ── One-time preloader (per browser tab) ── */
-  const preloaderKey = 'tectop-preloader-shown-v1';
-  if (!sessionStorage.getItem(preloaderKey)) {
-    const preloaderStyle = document.createElement('style');
-    preloaderStyle.textContent = `
-      .tectop-preloader {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        display: grid;
-        place-items: center;
-        gap: 16px;
-        background: #0b172f;
-        color: #fff;
-        transition: opacity .4s ease;
-      }
-      .tectop-preloader.hide { opacity: 0; pointer-events: none; }
-      .tectop-preloader__spinner {
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        border: 4px solid rgba(255, 255, 255, .25);
-        border-top-color: #4ea3ff;
-        animation: tectop-spin .9s linear infinite;
-      }
-      @keyframes tectop-spin { to { transform: rotate(360deg); } }
-    `;
-    document.head.appendChild(preloaderStyle);
-
-    const preloader = document.createElement('div');
-    preloader.className = 'tectop-preloader';
-    preloader.innerHTML = '<div class="tectop-preloader__spinner" aria-hidden="true"></div><strong>Carregando...</strong>';
-    document.body.appendChild(preloader);
-    document.body.style.overflow = 'hidden';
-
-    const hidePreloader = () => {
-      preloader.classList.add('hide');
-      setTimeout(() => {
-        preloader.remove();
-        preloaderStyle.remove();
-        document.body.style.overflow = '';
-      }, 420);
-      sessionStorage.setItem(preloaderKey, '1');
-    };
-
-    if (document.readyState === 'complete') {
-      hidePreloader();
-    } else {
-      window.addEventListener('load', hidePreloader, { once: true });
-    }
-  }
 
   /* ── Entrance animations via IntersectionObserver ── */
   const style = document.createElement('style');

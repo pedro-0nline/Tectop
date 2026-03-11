@@ -30,8 +30,37 @@
     let rafId = 0;
     let completed = false;
     let lastTick = 0;
+    let pageReady = false;
+    let assetsReady = false;
 
     document.body.classList.add('preloader-active');
+
+    const waitForImage = (img) => {
+      if (!img.hasAttribute('loading')) {
+        img.setAttribute('loading', 'eager');
+      } else if (img.getAttribute('loading') === 'lazy') {
+        img.setAttribute('loading', 'eager');
+      }
+
+      if (img.complete && img.naturalWidth > 0) {
+        return Promise.resolve();
+      }
+
+      return new Promise((resolve) => {
+        const done = () => resolve();
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+      });
+    };
+
+    const waitForPageImages = () => {
+      const images = Array.from(document.images);
+      if (!images.length) {
+        return Promise.resolve();
+      }
+
+      return Promise.all(images.map(waitForImage));
+    };
 
     const updateVisuals = (value) => {
       const bounded = Math.max(0, Math.min(100, value));
@@ -83,6 +112,9 @@
     };
 
     const completeProgress = () => {
+      if (!pageReady || !assetsReady) {
+        return;
+      }
       completed = true;
       targetProgress = 100;
       preloaderMessage.textContent = 'Ambiente pronto';
@@ -93,6 +125,7 @@
         targetProgress = Math.max(targetProgress, 70);
       }
       if (document.readyState === 'complete') {
+        pageReady = true;
         completeProgress();
       }
     };
@@ -110,7 +143,24 @@
 
     window.addEventListener('beforeunload', clearPreloaderTimers, { once: true });
     document.addEventListener('readystatechange', syncReadystate);
-    window.addEventListener('load', completeProgress, { once: true });
+    window.addEventListener('load', () => {
+      pageReady = true;
+      completeProgress();
+    }, { once: true });
+
+    waitForPageImages()
+      .catch(() => undefined)
+      .finally(() => {
+        assetsReady = true;
+        targetProgress = Math.max(targetProgress, 95);
+        completeProgress();
+      });
+
+    window.setTimeout(() => {
+      assetsReady = true;
+      targetProgress = Math.max(targetProgress, 95);
+      completeProgress();
+    }, 12000);
 
     syncReadystate();
     rafId = window.requestAnimationFrame(step);

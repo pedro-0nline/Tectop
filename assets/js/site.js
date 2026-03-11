@@ -52,6 +52,41 @@
     }
   });
 
+
+  /* ── Image loading optimization ── */
+  const isCriticalImage = (img) => {
+    return Boolean(
+      img.closest('.site-header') ||
+      img.closest('.top-banner') ||
+      img.closest('.home-hero') ||
+      img.closest('.hero-media') ||
+      img.closest('.whatsapp-fab')
+    );
+  };
+
+  document.querySelectorAll('img').forEach((img) => {
+    if (!img.hasAttribute('decoding')) {
+      img.setAttribute('decoding', 'async');
+    }
+
+    if (isCriticalImage(img)) {
+      if (!img.hasAttribute('loading')) {
+        img.setAttribute('loading', 'eager');
+      }
+      if (!img.hasAttribute('fetchpriority')) {
+        img.setAttribute('fetchpriority', 'high');
+      }
+      return;
+    }
+
+    if (!img.hasAttribute('loading')) {
+      img.setAttribute('loading', 'lazy');
+    }
+    if (!img.hasAttribute('fetchpriority')) {
+      img.setAttribute('fetchpriority', 'low');
+    }
+  });
+
   /* ── Entrance animations via IntersectionObserver ── */
   const style = document.createElement('style');
   style.textContent = `

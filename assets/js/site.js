@@ -10,6 +10,162 @@
 (function () {
   'use strict';
 
+
+  /* ── Cinematic preloader ── */
+  const preloader = document.querySelector('.preloader');
+  const preloaderBar = document.querySelector('[data-preloader-bar]');
+  const preloaderPercent = document.querySelector('[data-preloader-percent]');
+  const preloaderMessage = document.querySelector('[data-preloader-message]');
+
+  if (preloader && preloaderBar && preloaderPercent && preloaderMessage) {
+    const messages = [
+      'Carregando experiência...',
+      'Inicializando sistema...',
+      'Preparando interface...'
+    ];
+
+    let progress = 0;
+    let targetProgress = 12;
+    let messageIndex = 0;
+    let rafId = 0;
+    let completed = false;
+    let lastTick = 0;
+    let pageReady = false;
+    let assetsReady = false;
+
+    document.body.classList.add('preloader-active');
+
+    const waitForImage = (img) => {
+      if (!img.hasAttribute('loading')) {
+        img.setAttribute('loading', 'eager');
+      } else if (img.getAttribute('loading') === 'lazy') {
+        img.setAttribute('loading', 'eager');
+      }
+
+      if (img.complete && img.naturalWidth > 0) {
+        return Promise.resolve();
+      }
+
+      return new Promise((resolve) => {
+        const done = () => resolve();
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+      });
+    };
+
+    const waitForPageImages = () => {
+      const images = Array.from(document.images);
+      if (!images.length) {
+        return Promise.resolve();
+      }
+
+      return Promise.all(images.map(waitForImage));
+    };
+
+    const updateVisuals = (value) => {
+      const bounded = Math.max(0, Math.min(100, value));
+      preloaderBar.style.width = `${bounded}%`;
+      preloaderPercent.textContent = `${Math.round(bounded)}%`;
+    };
+
+    const advanceMessage = () => {
+      messageIndex = (messageIndex + 1) % messages.length;
+      preloaderMessage.textContent = messages[messageIndex];
+    };
+
+    const step = (timestamp) => {
+      if (!lastTick) {
+        lastTick = timestamp;
+      }
+      const delta = timestamp - lastTick;
+      lastTick = timestamp;
+
+      const smoothing = completed ? 0.14 : 0.05;
+      progress += (targetProgress - progress) * smoothing * (delta / 16.6);
+
+      if (Math.abs(targetProgress - progress) < 0.25) {
+        progress = targetProgress;
+      }
+
+      if (!completed && progress < 92) {
+        targetProgress = Math.min(92, targetProgress + 0.08 * (delta / 16.6));
+      }
+
+      updateVisuals(progress);
+
+      if (completed && progress >= 100) {
+        finalizePreloader();
+        return;
+      }
+
+      rafId = window.requestAnimationFrame(step);
+    };
+
+    const finalizePreloader = () => {
+      clearPreloaderTimers();
+      document.removeEventListener('readystatechange', syncReadystate);
+      preloader.classList.add('is-hidden');
+      document.body.classList.remove('preloader-active');
+      window.setTimeout(() => {
+        preloader.classList.add('is-gone');
+      }, 760);
+    };
+
+    const completeProgress = () => {
+      if (!pageReady || !assetsReady) {
+        return;
+      }
+      completed = true;
+      targetProgress = 100;
+      preloaderMessage.textContent = 'Ambiente pronto';
+    };
+
+    const syncReadystate = () => {
+      if (document.readyState === 'interactive') {
+        targetProgress = Math.max(targetProgress, 70);
+      }
+      if (document.readyState === 'complete') {
+        pageReady = true;
+        completeProgress();
+      }
+    };
+
+    const messageTimer = window.setInterval(() => {
+      if (!completed) {
+        advanceMessage();
+      }
+    }, 1350);
+
+    const clearPreloaderTimers = () => {
+      window.clearInterval(messageTimer);
+      window.cancelAnimationFrame(rafId);
+    };
+
+    window.addEventListener('beforeunload', clearPreloaderTimers, { once: true });
+    document.addEventListener('readystatechange', syncReadystate);
+    window.addEventListener('load', () => {
+      pageReady = true;
+      completeProgress();
+    }, { once: true });
+
+    waitForPageImages()
+      .catch(() => undefined)
+      .finally(() => {
+        assetsReady = true;
+        targetProgress = Math.max(targetProgress, 95);
+        completeProgress();
+      });
+
+    window.setTimeout(() => {
+      assetsReady = true;
+      targetProgress = Math.max(targetProgress, 95);
+      completeProgress();
+    }, 12000);
+
+    syncReadystate();
+    rafId = window.requestAnimationFrame(step);
+  }
+
   /* ── Navbar scroll class ── */
   const header = document.querySelector('.site-header');
   if (header) {
@@ -49,6 +205,41 @@
     const href = a.getAttribute('href');
     if (href === currentFile || (currentFile === '' && href === 'index.html')) {
       a.classList.add('active');
+    }
+  });
+
+
+  /* ── Image loading optimization ── */
+  const isCriticalImage = (img) => {
+    return Boolean(
+      img.closest('.site-header') ||
+      img.closest('.top-banner') ||
+      img.closest('.home-hero') ||
+      img.closest('.hero-media') ||
+      img.closest('.whatsapp-fab')
+    );
+  };
+
+  document.querySelectorAll('img').forEach((img) => {
+    if (!img.hasAttribute('decoding')) {
+      img.setAttribute('decoding', 'async');
+    }
+
+    if (isCriticalImage(img)) {
+      if (!img.hasAttribute('loading')) {
+        img.setAttribute('loading', 'eager');
+      }
+      if (!img.hasAttribute('fetchpriority')) {
+        img.setAttribute('fetchpriority', 'high');
+      }
+      return;
+    }
+
+    if (!img.hasAttribute('loading')) {
+      img.setAttribute('loading', 'lazy');
+    }
+    if (!img.hasAttribute('fetchpriority')) {
+      img.setAttribute('fetchpriority', 'low');
     }
   });
 

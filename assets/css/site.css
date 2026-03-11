@@ -624,18 +624,20 @@ body.page .hero::after {
 ══════════════════════════════════════════ */
 .logo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 12px;
   margin-top: 8px;
 }
 .logo-grid img {
-  width: 100%; aspect-ratio: 16/10;
+  width: 100%;
+  aspect-ratio: 2/1;
+  min-height: 120px;
   object-fit: contain;
-  padding: 8px;
+  padding: 6px;
   background: var(--white);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
-  filter: grayscale(.5) opacity(.8);
+  filter: none;
   transition: all var(--transition);
 }
 .logo-grid img:hover {

@@ -52,6 +52,58 @@
     }
   });
 
+  /* ── One-time preloader (per browser tab) ── */
+  const preloaderKey = 'tectop-preloader-shown-v1';
+  if (!sessionStorage.getItem(preloaderKey)) {
+    const preloaderStyle = document.createElement('style');
+    preloaderStyle.textContent = `
+      .tectop-preloader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        gap: 16px;
+        background: #0b172f;
+        color: #fff;
+        transition: opacity .4s ease;
+      }
+      .tectop-preloader.hide { opacity: 0; pointer-events: none; }
+      .tectop-preloader__spinner {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, .25);
+        border-top-color: #4ea3ff;
+        animation: tectop-spin .9s linear infinite;
+      }
+      @keyframes tectop-spin { to { transform: rotate(360deg); } }
+    `;
+    document.head.appendChild(preloaderStyle);
+
+    const preloader = document.createElement('div');
+    preloader.className = 'tectop-preloader';
+    preloader.innerHTML = '<div class="tectop-preloader__spinner" aria-hidden="true"></div><strong>Carregando...</strong>';
+    document.body.appendChild(preloader);
+    document.body.style.overflow = 'hidden';
+
+    const hidePreloader = () => {
+      preloader.classList.add('hide');
+      setTimeout(() => {
+        preloader.remove();
+        preloaderStyle.remove();
+        document.body.style.overflow = '';
+      }, 420);
+      sessionStorage.setItem(preloaderKey, '1');
+    };
+
+    if (document.readyState === 'complete') {
+      hidePreloader();
+    } else {
+      window.addEventListener('load', hidePreloader, { once: true });
+    }
+  }
+
   /* ── Entrance animations via IntersectionObserver ── */
   const style = document.createElement('style');
   style.textContent = `

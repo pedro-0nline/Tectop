@@ -11,24 +11,12 @@
   <link rel="icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="./home/favicon.ico">
-    <link rel="preload" as="image" href="./gerenciar-Serviços-de-ti/datacenter.webp" type="image/webp" fetchpriority="high">
+    <link rel="preload" as="image" href="./gerenciar-servicos-de-ti/datacenter-1600.avif" type="image/avif" fetchpriority="high">
 <link rel="stylesheet" href="assets/css/site.css">
+<script>if(sessionStorage.getItem('page-transition')){document.documentElement.classList.add('page-covered');}</script>
 </head>
 <body class="page" style="--page-bg:url(./home/background.webp)">
-<div class="preloader" role="status" aria-live="polite" aria-label="Carregamento da página">
-  <div class="preloader-bg"></div>
-  <div class="preloader-scanline" aria-hidden="true"></div>
-  <div class="preloader-core">
-    <img class="preloader-logo" src="./home/logotectop.webp" alt="TecTop">
-    <p class="preloader-message" data-preloader-message>Carregando experiência...</p>
 
-    <div class="preloader-progress" aria-hidden="true">
-      <span class="preloader-progress-bar" data-preloader-bar></span>
-    </div>
-
-    <p class="preloader-percent" data-preloader-percent>0%</p>
-  </div>
-</div>
 
 
 <header class="site-header">
@@ -50,14 +38,18 @@
     <div class="container hero-grid">
       <div class="hero-content"><p class="eyebrow">TecTop</p>
         <div class="title-card"><h1>Gerenciar Serviços de TI</h1></div>
-        <p class="lead">Gestao completa do seu ambiente. Monitoramento, padronizacao e melhoria continua com indicadores claros.</p>
+        <p class="lead">Gestão completa do seu ambiente. Monitoramento, padronização e melhoria contínua com indicadores claros.</p>
         <div class="actions">
           <a class="btn primary" href="https://wa.me/556239452825" target="_blank" rel="noreferrer">Falar no WhatsApp</a>
           <a class="btn ghost" href="fale-conosco.html">Fale conosco</a>
         </div>
       </div>
-      <div class="hero-media">
-        <img loading="eager" decoding="async" fetchpriority="high" src="./gerenciar-servicos-de-ti/datacenter.webp" alt="Gerenciar Serviços de TI">
+      <div class="hero-media" style="background-image:url('./gerenciar-servicos-de-ti/datacenter-placeholder.png');background-size:cover;background-position:center;">
+        <img loading="eager" decoding="async" fetchpriority="high" data-preloader="true"
+             src="./gerenciar-servicos-de-ti/datacenter-1600.avif"
+             srcset="./gerenciar-servicos-de-ti/datacenter-900.avif 900w, ./gerenciar-servicos-de-ti/datacenter-1600.avif 1600w, ./gerenciar-servicos-de-ti/datacenter.webp 4408w"
+             sizes="(max-width: 768px) 90vw, 1200px"
+             alt="Gerenciar Serviços de TI">
       </div>
     </div>
   </section>
@@ -67,7 +59,19 @@
   <section class="section">
     <div class="container">
       <h2>Destaques</h2>
-      <div class="cards"><div class="card"><h3>Diagnóstico e planejamento</h3><p>Mapeamos o ambiente atual e definimos um plano executável.</p></div><div class="card"><h3>Execução e acompanhamento</h3><p>Atuação técnica com metas, prazos e comunicação clara.</p></div><div class="card"><h3>Segurança e continuidade</h3><p>Boas Práticas para proteger dados e reduzir indisponibilidades.</p></div></div>
+      <div class="cards">
+        <div class="card"><h3>Helpdesk N1, N2 e N3</h3><p>Atendimento técnico estruturado com SLA definido, histórico de chamados e relatórios mensais de desempenho.</p></div>
+        <div class="card"><h3>Gestão de Ativos</h3><p>Inventário completo de hardware e software com controle de licenças e ciclo de vida dos equipamentos.</p></div>
+        <div class="card"><h3>Monitoramento Proativo</h3><p>Identificação antecipada de falhas e anomalias antes que impactem a operação do seu negócio.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-cta">
+    <div class="container">
+      <h2>Terceirize a gestão do seu ambiente de TI</h2>
+      <p>Reduzimos sua carga operacional com processos claros, SLA definido e indicadores de desempenho acompanhados de perto.</p>
+      <a class="btn white" href="fale-conosco.html">Fale com a TecTop</a>
     </div>
   </section>
 </main>

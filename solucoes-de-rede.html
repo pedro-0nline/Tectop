@@ -11,24 +11,12 @@
   <link rel="icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="./home/favicon.ico">
-    <link rel="preload" as="image" href="./solucoes-de-rede/switch.webp" type="image/webp" fetchpriority="high">
+    <link rel="preload" as="image" href="./solucoes-de-rede/switch-1600.avif" type="image/avif" fetchpriority="high">
 <link rel="stylesheet" href="assets/css/site.css">
+<script>if(sessionStorage.getItem('page-transition')){document.documentElement.classList.add('page-covered');}</script>
 </head>
 <body class="page" style="--page-bg:url(./home/background.webp)">
-<div class="preloader" role="status" aria-live="polite" aria-label="Carregamento da página">
-  <div class="preloader-bg"></div>
-  <div class="preloader-scanline" aria-hidden="true"></div>
-  <div class="preloader-core">
-    <img class="preloader-logo" src="./home/logotectop.webp" alt="TecTop">
-    <p class="preloader-message" data-preloader-message>Carregando experiência...</p>
 
-    <div class="preloader-progress" aria-hidden="true">
-      <span class="preloader-progress-bar" data-preloader-bar></span>
-    </div>
-
-    <p class="preloader-percent" data-preloader-percent>0%</p>
-  </div>
-</div>
 
 
 <header class="site-header">
@@ -56,8 +44,12 @@
           <a class="btn ghost" href="fale-conosco.html">Fale conosco</a>
         </div>
       </div>
-      <div class="hero-media">
-        <img loading="eager" decoding="async" fetchpriority="high" src="./solucoes-de-rede/switch.webp" alt="Soluções de rede">
+      <div class="hero-media" style="background-image:url('./solucoes-de-rede/switch-placeholder.png');background-size:cover;background-position:center;">
+        <img loading="eager" decoding="async" fetchpriority="high" data-preloader="true"
+             src="./solucoes-de-rede/switch-1600.avif"
+             srcset="./solucoes-de-rede/switch-900.avif 900w, ./solucoes-de-rede/switch-1600.avif 1600w, ./solucoes-de-rede/switch.webp 4000w"
+             sizes="(max-width: 768px) 90vw, 1200px"
+             alt="Soluções de rede">
       </div>
     </div>
   </section>
@@ -67,7 +59,19 @@
   <section class="section">
     <div class="container">
       <h2>Destaques</h2>
-      <div class="cards"><div class="card"><h3>Diagnóstico e planejamento</h3><p>Mapeamos o ambiente atual e definimos um plano executável.</p></div><div class="card"><h3>Execução e acompanhamento</h3><p>Atuação técnica com metas, prazos e comunicação clara.</p></div><div class="card"><h3>Segurança e continuidade</h3><p>Boas Práticas para proteger dados e reduzir indisponibilidades.</p></div></div>
+      <div class="cards">
+        <div class="card"><h3>Projeto e Instalação</h3><p>Infraestrutura de rede cabeada e wireless dimensionada para o porte e a demanda do seu ambiente corporativo.</p></div>
+        <div class="card"><h3>Firewall e Segurança</h3><p>Proteção de perímetro, VPN corporativa e controle de acesso por perfil de usuário e dispositivo.</p></div>
+        <div class="card"><h3>Monitoramento de Rede</h3><p>Visibilidade em tempo real do tráfego, alertas automáticos e resposta rápida a incidentes de conectividade.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-cta">
+    <div class="container">
+      <h2>Sua rede estável, segura e performática</h2>
+      <p>Projetamos, instalamos e monitoramos infraestruturas de rede com foco em disponibilidade, segurança e desempenho.</p>
+      <a class="btn white" href="fale-conosco.html">Fale com a TecTop</a>
     </div>
   </section>
 </main>

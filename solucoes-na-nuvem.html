@@ -11,24 +11,12 @@
   <link rel="icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="./home/favicon.ico">
-    <link rel="preload" as="image" href="./solucoes-na-nuvem/datacenter.webp" type="image/webp" fetchpriority="high">
+    <link rel="preload" as="image" href="./solucoes-na-nuvem/datacenter-1600.avif" type="image/avif" fetchpriority="high">
 <link rel="stylesheet" href="assets/css/site.css">
+<script>if(sessionStorage.getItem('page-transition')){document.documentElement.classList.add('page-covered');}</script>
 </head>
 <body class="page" style="--page-bg:url(./home/background.webp)">
-<div class="preloader" role="status" aria-live="polite" aria-label="Carregamento da página">
-  <div class="preloader-bg"></div>
-  <div class="preloader-scanline" aria-hidden="true"></div>
-  <div class="preloader-core">
-    <img class="preloader-logo" src="./home/logotectop.webp" alt="TecTop">
-    <p class="preloader-message" data-preloader-message>Carregando experiência...</p>
 
-    <div class="preloader-progress" aria-hidden="true">
-      <span class="preloader-progress-bar" data-preloader-bar></span>
-    </div>
-
-    <p class="preloader-percent" data-preloader-percent>0%</p>
-  </div>
-</div>
 
 
 <header class="site-header">
@@ -56,8 +44,12 @@
           <a class="btn ghost" href="fale-conosco.html">Fale conosco</a>
         </div>
       </div>
-      <div class="hero-media">
-        <img loading="eager" decoding="async" fetchpriority="high" src="./solucoes-na-nuvem/datacenter.webp" alt="Soluções na nuvem">
+      <div class="hero-media" style="background-image:url('./solucoes-na-nuvem/datacenter-placeholder.png');background-size:cover;background-position:center;">
+        <img loading="eager" decoding="async" fetchpriority="high" data-preloader="true"
+             src="./solucoes-na-nuvem/datacenter-1600.avif"
+             srcset="./solucoes-na-nuvem/datacenter-900.avif 900w, ./solucoes-na-nuvem/datacenter-1600.avif 1600w, ./solucoes-na-nuvem/datacenter.webp 4408w"
+             sizes="(max-width: 768px) 90vw, 1200px"
+             alt="Soluções na nuvem">
       </div>
     </div>
   </section>
@@ -67,7 +59,19 @@
   <section class="section">
     <div class="container">
       <h2>Destaques</h2>
-      <div class="cards"><div class="card"><h3>Diagnóstico e planejamento</h3><p>Mapeamos o ambiente atual e definimos um plano executável.</p></div><div class="card"><h3>Execução e acompanhamento</h3><p>Atuação técnica com metas, prazos e comunicação clara.</p></div><div class="card"><h3>Segurança e continuidade</h3><p>Boas Práticas para proteger dados e reduzir indisponibilidades.</p></div></div>
+      <div class="cards">
+        <div class="card"><h3>Migração para a Nuvem</h3><p>Transferimos seus sistemas e dados com segurança total, garantindo continuidade operacional em todo o processo.</p></div>
+        <div class="card"><h3>Gestão e Monitoramento</h3><p>Administração contínua do seu ambiente cloud com controle de custos, performance e alertas em tempo real.</p></div>
+        <div class="card"><h3>Alta Disponibilidade</h3><p>Arquitetura redundante com failover automático para garantir que seus serviços estejam sempre no ar.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-cta">
+    <div class="container">
+      <h2>Leve sua infraestrutura para a nuvem</h2>
+      <p>Nossa equipe projeta, migra e opera ambientes em nuvem com segurança, governança e previsibilidade de custos.</p>
+      <a class="btn white" href="fale-conosco.html">Fale com a TecTop</a>
     </div>
   </section>
 </main>

@@ -12,20 +12,20 @@
   <link rel="shortcut icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="./home/favicon.ico">
   <link rel="stylesheet" href="assets/css/site.css">
+  <script>if(localStorage.getItem('preloaderShown')){document.documentElement.classList.add('preloader-skip');}if(sessionStorage.getItem('page-transition')){document.documentElement.classList.add('page-covered');}</script>
 </head>
 <body class="page" style="--page-bg:url(./home/background.webp)">
 <div class="preloader" role="status" aria-live="polite" aria-label="Carregamento da página">
-  <div class="preloader-bg"></div>
-  <div class="preloader-scanline" aria-hidden="true"></div>
+  <div class="preloader-grid"></div>
   <div class="preloader-core">
-    <img class="preloader-logo" src="./home/logotectop.webp" alt="TecTop">
-    <p class="preloader-message" data-preloader-message>Carregando experiência...</p>
-
-    <div class="preloader-progress" aria-hidden="true">
-      <span class="preloader-progress-bar" data-preloader-bar></span>
+    <div class="preloader-logo-wrap">
+      <img class="preloader-logo" src="./home/logotectop.webp" alt="TecTop">
+      <div class="preloader-ring"></div>
     </div>
-
-    <p class="preloader-percent" data-preloader-percent>0%</p>
+    <div class="preloader-counter">0</div>
+    <div class="preloader-progress">
+      <div class="preloader-progress-bar"></div>
+    </div>
   </div>
 </div>
 
@@ -89,15 +89,15 @@
     <div class="container">
       <h2>MISSÃO, VISÃO E VALORES - TECTOP</h2>
       <div class="mvv-block">
-        <h3>Missão (Por que existimos?)</h3>
+        <h3>Missão</h3>
         <p>Oferecer suporte e soluções tecnológicas personalizadas, garantindo eficiência, segurança e inovação para empresas que dependem da tecnologia para crescer.</p>
       </div>
       <div class="mvv-block">
-        <h3>Visão (Onde queremos chegar?)</h3>
+        <h3>Visão</h3>
         <p>Ser reconhecida como uma empresa de TI referência em atendimento técnico de qualidade, oferecendo Soluções ágeis e confiáveis que impulsionam o sucesso dos clientes.</p>
       </div>
       <div class="mvv-block">
-        <h3>Valores (O que nos guia?)</h3>
+        <h3>Valores</h3>
         <ul>
           <li>Compromisso com a excelência - Atendimento eficiente, resolvendo problemas de forma ágil e precisa.</li>
           <li>Tecnologia como Solução - Usamos a inovação para facilitar e otimizar processos empresariais.</li>

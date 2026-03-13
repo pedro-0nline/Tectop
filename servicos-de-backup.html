@@ -11,24 +11,12 @@
   <link rel="icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="./home/favicon.ico">
-    <link rel="preload" as="image" href="./servicos-de-backup/tinodatacenter.webp" type="image/webp" fetchpriority="high">
+    <link rel="preload" as="image" href="./servicos-de-backup/tinodatacenter-1600.avif" type="image/avif" fetchpriority="high">
 <link rel="stylesheet" href="assets/css/site.css">
+<script>if(sessionStorage.getItem('page-transition')){document.documentElement.classList.add('page-covered');}</script>
 </head>
 <body class="page" style="--page-bg:url(./home/background.webp)">
-<div class="preloader" role="status" aria-live="polite" aria-label="Carregamento da página">
-  <div class="preloader-bg"></div>
-  <div class="preloader-scanline" aria-hidden="true"></div>
-  <div class="preloader-core">
-    <img class="preloader-logo" src="./home/logotectop.webp" alt="TecTop">
-    <p class="preloader-message" data-preloader-message>Carregando experiência...</p>
 
-    <div class="preloader-progress" aria-hidden="true">
-      <span class="preloader-progress-bar" data-preloader-bar></span>
-    </div>
-
-    <p class="preloader-percent" data-preloader-percent>0%</p>
-  </div>
-</div>
 
 
 <header class="site-header">
@@ -49,15 +37,19 @@
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-content"><p class="eyebrow">TecTop</p>
-        <div class="title-card"><h1>serviços de backup</h1></div>
-        <p class="lead">Seus dados protegidos. Rotinas confiáveis, redundancia e restauração testada para reduzir riscos.</p>
+        <div class="title-card"><h1>Serviços de Backup</h1></div>
+        <p class="lead">Seus dados protegidos. Rotinas confiáveis, redundância e restauração testada para reduzir riscos.</p>
         <div class="actions">
           <a class="btn primary" href="https://wa.me/556239452825" target="_blank" rel="noreferrer">Falar no WhatsApp</a>
           <a class="btn ghost" href="fale-conosco.html">Fale conosco</a>
         </div>
       </div>
-      <div class="hero-media">
-        <img loading="eager" decoding="async" fetchpriority="high" src="./servicos-de-backup/tinodatacenter.webp" alt="serviços de backup">
+      <div class="hero-media" style="background-image:url('./servicos-de-backup/tinodatacenter-placeholder.png');background-size:cover;background-position:center;">
+        <img loading="eager" decoding="async" fetchpriority="high" data-preloader="true"
+             src="./servicos-de-backup/tinodatacenter-1600.avif"
+             srcset="./servicos-de-backup/tinodatacenter-900.avif 900w, ./servicos-de-backup/tinodatacenter-1600.avif 1600w, ./servicos-de-backup/tinodatacenter.webp 4203w"
+             sizes="(max-width: 768px) 90vw, 1200px"
+             alt="serviços de backup">
       </div>
     </div>
   </section>
@@ -67,7 +59,19 @@
   <section class="section">
     <div class="container">
       <h2>Destaques</h2>
-      <div class="cards"><div class="card"><h3>Diagnóstico e planejamento</h3><p>Mapeamos o ambiente atual e definimos um plano executável.</p></div><div class="card"><h3>Execução e acompanhamento</h3><p>Atuação técnica com metas, prazos e comunicação clara.</p></div><div class="card"><h3>Segurança e continuidade</h3><p>Boas Práticas para proteger dados e reduzir indisponibilidades.</p></div></div>
+      <div class="cards">
+        <div class="card"><h3>Backup Local e em Nuvem</h3><p>Cópias redundantes nos seus servidores e em data centers certificados para máxima proteção dos dados.</p></div>
+        <div class="card"><h3>Restauração Testada</h3><p>Testes periódicos de restore para garantir que seus dados sejam sempre recuperáveis quando necessário.</p></div>
+        <div class="card"><h3>Políticas Personalizadas</h3><p>Regras de retenção, agendamento automático e alertas configurados conforme as necessidades do seu negócio.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-cta">
+    <div class="container">
+      <h2>Proteja os dados do seu negócio</h2>
+      <p>Rotinas confiáveis de backup com redundância, monitoramento contínuo e restauração testada para minimizar riscos.</p>
+      <a class="btn white" href="fale-conosco.html">Fale com a TecTop</a>
     </div>
   </section>
 </main>

@@ -12,23 +12,12 @@
   <link rel="shortcut icon" href="./home/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="./home/favicon.ico">
     <link rel="preload" as="image" href="./home/logotectop.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="./gerenciar-servicos-de-ti/servicos-1600.avif" type="image/avif" fetchpriority="high">
 <link rel="stylesheet" href="assets/css/site.css">
+<script>if(sessionStorage.getItem('page-transition')){document.documentElement.classList.add('page-covered');}</script>
 </head>
 <body class="page" style="--page-bg:url(./home/background.webp)">
-<div class="preloader" role="status" aria-live="polite" aria-label="Carregamento da página">
-  <div class="preloader-bg"></div>
-  <div class="preloader-scanline" aria-hidden="true"></div>
-  <div class="preloader-core">
-    <img class="preloader-logo" src="./home/logotectop.webp" alt="TecTop">
-    <p class="preloader-message" data-preloader-message>Carregando experiência...</p>
 
-    <div class="preloader-progress" aria-hidden="true">
-      <span class="preloader-progress-bar" data-preloader-bar></span>
-    </div>
-
-    <p class="preloader-percent" data-preloader-percent>0%</p>
-  </div>
-</div>
 
 <header class="site-header">
   <div class="container header-inner">
@@ -56,8 +45,12 @@
           <a class="btn ghost" href="fale-conosco.html">Fale conosco</a>
         </div>
       </div>
-      <div class="hero-media">
-        <img loading="eager" decoding="async" fetchpriority="high" src="./gerenciar-servicos-de-ti/servicos.webp" alt="TecTop">
+      <div class="hero-media" style="background-image:url('./gerenciar-servicos-de-ti/servicos-placeholder.png');background-size:cover;background-position:center;">
+        <img loading="eager" decoding="async" fetchpriority="high" data-preloader="true"
+             src="./gerenciar-servicos-de-ti/servicos-1600.avif"
+             srcset="./gerenciar-servicos-de-ti/servicos-900.avif 900w, ./gerenciar-servicos-de-ti/servicos-1600.avif 1600w, ./gerenciar-servicos-de-ti/servicos.webp 800w"
+             sizes="(max-width: 768px) 90vw, 1200px"
+             alt="TecTop">
       </div>
     </div>
   </section>

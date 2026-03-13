@@ -98,6 +98,23 @@
   };
 
   const prefetchPromise = shouldPrefetch ? prefetchAllRoutes() : Promise.resolve();
+  const cacheHeroImage = async () => {
+    const heroImg = document.querySelector('.hero-media img');
+    if (!heroImg) return;
+    const src = heroImg.currentSrc || heroImg.getAttribute('src');
+    if (!src) return;
+    try {
+      const url = new URL(src, window.location.href).href;
+      if ('caches' in window) {
+        const cache = await caches.open('tectop-preload-v1');
+        await cache.add(url);
+      } else {
+        await fetch(src, { cache: 'force-cache' });
+      }
+    } catch (_) {
+      // Ignore caching errors
+    }
+  };
   const preloadImagesFromAssets = async (assets) => {
     const imageUrls = assets.filter((url) => /\.(png|jpe?g|webp|gif|svg)(\\?|#|$)/i.test(url));
     if (!imageUrls.length) return;
@@ -116,171 +133,206 @@
     if (!shouldShowPreloader) {
       preloader.classList.add('is-gone');
     } else {
-      const messages = [
-        'Carregando experiência...',
-        'Inicializando sistema...',
-        'Preparando interface...'
-      ];
-  
-      let progress = 0;
-      let targetProgress = 12;
-      let messageIndex = 0;
-      let rafId = 0;
-      let completed = false;
-      let lastTick = 0;
-      let pageReady = false;
-      let assetsReady = false;
-      let routesReady = !shouldPrefetch;
-  
-      document.body.classList.add('preloader-active');
-  
-      const waitForImage = (img) => {
-        if (!img.hasAttribute('loading')) {
-          img.setAttribute('loading', 'eager');
-        } else if (img.getAttribute('loading') === 'lazy') {
-          img.setAttribute('loading', 'eager');
-        }
-  
-        if (img.complete && img.naturalWidth > 0) {
-          return Promise.resolve();
-        }
-  
-        return new Promise((resolve) => {
-          const done = () => resolve();
-          img.addEventListener('load', done, { once: true });
-          img.addEventListener('error', done, { once: true });
-        });
-      };
-  
-      const waitForPageImages = () => {
-        const images = Array.from(document.images);
-        if (!images.length) {
-          return Promise.resolve();
-        }
-  
-        return Promise.all(images.map(waitForImage));
-      };
-  
-      const updateVisuals = (value) => {
-        const bounded = Math.max(0, Math.min(100, value));
-        preloaderBar.style.width = `${bounded}%`;
-        preloaderPercent.textContent = `${Math.round(bounded)}%`;
-      };
-  
-      const advanceMessage = () => {
-        messageIndex = (messageIndex + 1) % messages.length;
-        preloaderMessage.textContent = messages[messageIndex];
-      };
-  
-      const step = (timestamp) => {
-        if (!lastTick) {
+      const preloaderDelayMs = 350;
+      let preloaderActivated = false;
+      let preloaderTimer = 0;
+
+      const startPreloader = () => {
+        if (preloaderActivated) return;
+        preloaderActivated = true;
+        localStorage.setItem(preloaderShownKey, '1');
+
+        const messages = [
+          'Carregando experiência...',
+          'Inicializando sistema...',
+          'Preparando interface...'
+        ];
+    
+        let progress = 0;
+        let targetProgress = 12;
+        let messageIndex = 0;
+        let rafId = 0;
+        let completed = false;
+        let lastTick = 0;
+        let pageReady = false;
+        let assetsReady = false;
+        let routesReady = !shouldPrefetch;
+    
+        document.body.classList.add('preloader-active');
+    
+        const waitForImage = (img) => {
+          if (!img.hasAttribute('loading')) {
+            img.setAttribute('loading', 'eager');
+          } else if (img.getAttribute('loading') === 'lazy') {
+            img.setAttribute('loading', 'eager');
+          }
+    
+          if (img.complete && img.naturalWidth > 0) {
+            return Promise.resolve();
+          }
+    
+          return new Promise((resolve) => {
+            const done = () => resolve();
+            img.addEventListener('load', done, { once: true });
+            img.addEventListener('error', done, { once: true });
+          });
+        };
+    
+        const waitForPageImages = () => {
+          const images = Array.from(document.images);
+          if (!images.length) {
+            return Promise.resolve();
+          }
+    
+          return Promise.all(images.map(waitForImage));
+        };
+    
+        const updateVisuals = (value) => {
+          const bounded = Math.max(0, Math.min(100, value));
+          preloaderBar.style.width = `${bounded}%`;
+          preloaderPercent.textContent = `${Math.round(bounded)}%`;
+        };
+    
+        const advanceMessage = () => {
+          messageIndex = (messageIndex + 1) % messages.length;
+          preloaderMessage.textContent = messages[messageIndex];
+        };
+    
+        const step = (timestamp) => {
+          if (!lastTick) {
+            lastTick = timestamp;
+          }
+          const delta = timestamp - lastTick;
           lastTick = timestamp;
-        }
-        const delta = timestamp - lastTick;
-        lastTick = timestamp;
-  
-        const smoothing = completed ? 0.14 : 0.05;
-        progress += (targetProgress - progress) * smoothing * (delta / 16.6);
-  
-        if (Math.abs(targetProgress - progress) < 0.25) {
-          progress = targetProgress;
-        }
-  
-        if (!completed && progress < 92) {
-          targetProgress = Math.min(92, targetProgress + 0.08 * (delta / 16.6));
-        }
-  
-        updateVisuals(progress);
-  
-        if (completed && progress >= 100) {
-          finalizePreloader();
-          return;
-        }
-  
-        rafId = window.requestAnimationFrame(step);
-      };
-  
-      const finalizePreloader = () => {
-        clearPreloaderTimers();
-        document.removeEventListener('readystatechange', syncReadystate);
-        preloader.classList.add('is-hidden');
-        document.body.classList.remove('preloader-active');
-        window.setTimeout(() => {
-          preloader.classList.add('is-gone');
-        }, 760);
-      };
-  
-      const completeProgress = () => {
-        if (!pageReady || !assetsReady || !routesReady) {
-          return;
-        }
-        completed = true;
-        targetProgress = 100;
-        preloaderMessage.textContent = 'Ambiente pronto';
-      };
-  
-      const syncReadystate = () => {
-        if (document.readyState === 'interactive') {
-          targetProgress = Math.max(targetProgress, 70);
-        }
-        if (document.readyState === 'complete') {
+    
+          const smoothing = completed ? 0.14 : 0.05;
+          progress += (targetProgress - progress) * smoothing * (delta / 16.6);
+    
+          if (Math.abs(targetProgress - progress) < 0.25) {
+            progress = targetProgress;
+          }
+    
+          if (!completed && progress < 92) {
+            targetProgress = Math.min(92, targetProgress + 0.08 * (delta / 16.6));
+          }
+    
+          updateVisuals(progress);
+    
+          if (completed && progress >= 100) {
+            finalizePreloader();
+            return;
+          }
+    
+          rafId = window.requestAnimationFrame(step);
+        };
+    
+        const finalizePreloader = () => {
+          clearPreloaderTimers();
+          document.removeEventListener('readystatechange', syncReadystate);
+          preloader.classList.add('is-hidden');
+          document.body.classList.remove('preloader-active');
+          window.setTimeout(() => {
+            preloader.classList.add('is-gone');
+          }, 760);
+        };
+    
+        const completeProgress = () => {
+          if (!pageReady || !assetsReady || !routesReady) {
+            return;
+          }
+          completed = true;
+          targetProgress = 100;
+          preloaderMessage.textContent = 'Ambiente pronto';
+        };
+    
+        const syncReadystate = () => {
+          if (document.readyState === 'interactive') {
+            targetProgress = Math.max(targetProgress, 70);
+          }
+          if (document.readyState === 'complete') {
+            pageReady = true;
+            completeProgress();
+          }
+        };
+    
+        const messageTimer = window.setInterval(() => {
+          if (!completed) {
+            advanceMessage();
+          }
+        }, 1350);
+    
+        const clearPreloaderTimers = () => {
+          window.clearInterval(messageTimer);
+          window.cancelAnimationFrame(rafId);
+        };
+    
+        window.addEventListener('beforeunload', clearPreloaderTimers, { once: true });
+        document.addEventListener('readystatechange', syncReadystate);
+        window.addEventListener('load', () => {
           pageReady = true;
           completeProgress();
-        }
-      };
-  
-      const messageTimer = window.setInterval(() => {
-        if (!completed) {
-          advanceMessage();
-        }
-      }, 1350);
-  
-      const clearPreloaderTimers = () => {
-        window.clearInterval(messageTimer);
-        window.cancelAnimationFrame(rafId);
-      };
-  
-      window.addEventListener('beforeunload', clearPreloaderTimers, { once: true });
-      document.addEventListener('readystatechange', syncReadystate);
-      window.addEventListener('load', () => {
-        pageReady = true;
-        completeProgress();
-      }, { once: true });
-  
-      waitForPageImages()
+        }, { once: true });
+    
+        waitForPageImages()
+          .catch(() => undefined)
+          .finally(() => {
+            assetsReady = true;
+            targetProgress = Math.max(targetProgress, 95);
+            completeProgress();
+          });
+    
+      prefetchPromise
+        .then((assets) => preloadImagesFromAssets(assets || []))
         .catch(() => undefined)
         .finally(() => {
+          routesReady = true;
+          targetProgress = Math.max(targetProgress, 98);
+          localStorage.setItem(prefetchDoneKey, '1');
+          completeProgress();
+        });
+
+      cacheHeroImage();
+    
+        window.setTimeout(() => {
           assetsReady = true;
           targetProgress = Math.max(targetProgress, 95);
           completeProgress();
-        });
-  
-    prefetchPromise
-      .then((assets) => preloadImagesFromAssets(assets || []))
-      .catch(() => undefined)
-      .finally(() => {
+        }, 12000);
+    
+      window.setTimeout(() => {
         routesReady = true;
         targetProgress = Math.max(targetProgress, 98);
         localStorage.setItem(prefetchDoneKey, '1');
         completeProgress();
-      });
-  
-      window.setTimeout(() => {
-        assetsReady = true;
-        targetProgress = Math.max(targetProgress, 95);
-        completeProgress();
-      }, 12000);
-  
-    window.setTimeout(() => {
-      routesReady = true;
-      targetProgress = Math.max(targetProgress, 98);
-      localStorage.setItem(prefetchDoneKey, '1');
-      completeProgress();
-    }, 24000);
-  
-      syncReadystate();
-      rafId = window.requestAnimationFrame(step);
-      localStorage.setItem(preloaderShownKey, '1');
+      }, 24000);
+    
+        syncReadystate();
+        rafId = window.requestAnimationFrame(step);
+      };
+
+      const skipPreloader = () => {
+        if (preloaderActivated) return;
+        preloader.classList.add('is-gone');
+      };
+
+      if (document.readyState === 'complete') {
+        skipPreloader();
+      } else {
+        preloaderTimer = window.setTimeout(() => {
+          if (document.readyState !== 'complete') {
+            startPreloader();
+          } else {
+            skipPreloader();
+          }
+        }, preloaderDelayMs);
+
+        window.addEventListener('load', () => {
+          if (!preloaderActivated) {
+            window.clearTimeout(preloaderTimer);
+            skipPreloader();
+          }
+        }, { once: true });
+      }
     }
   }
 
@@ -343,8 +395,7 @@
     el.classList.add('reveal');
     el.style.transitionDelay = `${(i % 6) * 60}ms`;
   });
-  document.querySelectorAll('.hero-content, .home-hero-content').forEach(el => el.classList.add('reveal-left'));
-  document.querySelectorAll('.hero-media').forEach(el => el.classList.add('reveal-right'));
+  document.querySelectorAll('.home-hero-content').forEach(el => el.classList.add('reveal-left'));
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {

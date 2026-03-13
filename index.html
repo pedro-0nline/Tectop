@@ -1,9 +1,16 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap">
   <title>TecTop | Home</title>
+  <link rel="icon" href="./home/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="./home/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="./home/favicon.ico">
   <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body class="page" style="--page-bg:url(./home/background.webp)">
@@ -32,12 +39,15 @@
       <img class="brand-sub" src="./home/tecnologia.webp" alt="Tecnologia">
     </a>
     <button class="nav-toggle" aria-label="Abrir menu">Menu</button>
-    <nav class="site-nav"><a href="index.html">Home</a><a href="suporte.html">Suporte</a><a href="porque-nos-escolher.html">Por que Nos Escolher?</a><a href="parceiros.html">Parceiros</a><a href="fale-conosco.html">Fale com a TecTop</a></nav>
+    <nav class="site-nav"><a href="index.html">Home</a><a href="servicos.html">Serviços</a><a href="suporte.html">Suporte</a><a href="porque-nos-escolher.html">Por que Nos Escolher?</a><a href="parceiros.html">Parceiros</a><a href="fale-conosco.html">Fale com a TecTop</a></nav>
   </div>
 </header>
 
 <div class="top-banner">
-  <img src="./home/Tectopfundo.webp" alt="TecTop">
+  <picture>
+    <source srcset="./home/Tectopfundo.webp" type="image/webp">
+    <img src="./home/Tectopfundo.webp" alt="TecTop" decoding="async">
+  </picture>
 </div>
 
 <main>
@@ -48,11 +58,11 @@
     <div class="container home-hero-content">
       <div class="hero-tag">
         <span class="hero-years">+30 ANOS</span>
-        <span class="hero-tagline">de excelencia em solucoes de TI</span>
+        <span class="hero-tagline">de excelência em Soluções de TI</span>
       </div>
       <div class="hero-card">
-        <h1>TI Consultoria e Servicos</h1>
-        <p>Oferecemos solucoes tecnologicas sob medida para o seu negocio. Nossa equipe esta pronta para auxiliar com suporte, otimizacao de sistemas e seguranca digital, garantindo que sua empresa funcione de forma eficiente e segura.</p>
+        <h1>Gestão de TI, Consultoria e Serviços Especializados</h1>
+        <p>Oferecemos soluções tecnológicas sob medida para o seu negócio. Nossa equipe está pronta para auxiliar com suporte, otimização de sistemas e segurança digital, garantindo que sua empresa funcione de forma eficiente e segura.</p>
         <div class="hero-actions">
           <a class="btn primary" href="fale-conosco.html">Saiba mais</a>
           <a class="btn ghost" href="https://wa.me/556239452825" target="_blank" rel="noreferrer">Falar no WhatsApp</a>
@@ -61,62 +71,52 @@
     </div>
   </section>
 
-  <section class="home-services">
-    <div class="container">
-      <div class="section-title">
-        <h2>Nossos Servicos</h2>
-        <img src="./home/logotectop.webp" alt="TecTop">
-      </div>
-      <div class="services-grid">
-        <a class="service-card" href="solucoes-na-nuvem.html">
-          <h3>Solucoes na Nuvem</h3>
-          <p>Infraestrutura e dados com seguranca, desempenho e governanca.</p>
-          <span class="more">+ Ler Mais</span>
-        </a>
-        <a class="service-card" href="gerenciar-servicos-de-ti.html">
-          <h3>Gerenciar Servicos de TI</h3>
-          <p>Monitoramento e gestao completa do ambiente com indicadores claros.</p>
-          <span class="more">+ Ler Mais</span>
-        </a>
-        <a class="service-card" href="servicos-de-backup.html">
-          <h3>Backup de Seguranca</h3>
-          <p>Rotinas confiaveis e recuperacao rapida para reduzir riscos.</p>
-          <span class="more">+ Ler Mais</span>
-        </a>
-        <a class="service-card" href="processamento-na-nuvem.html">
-          <h3>Processos em Nuvem</h3>
-          <p>Operacao agil, escalavel e com custos previsiveis.</p>
-          <span class="more">+ Ler Mais</span>
-        </a>
-        <a class="service-card" href="solucoes-de-rede.html">
-          <h3>Solucoes de Rede</h3>
-          <p>Conectividade estavel, segura e preparada para crescer.</p>
-          <span class="more">+ Ler Mais</span>
-        </a>
-        <a class="service-card" href="suporte-e-consultoria.html">
-          <h3>Suporte e Consultoria</h3>
-          <p>Estrategia e operacao lado a lado para evoluir sua TI.</p>
-          <span class="more">+ Ler Mais</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
   <section class="home-specialists">
     <div class="container">
       <div class="specialists-grid">
         <div class="specialists-title">
-          <h2>Somos Especialistas</h2>
+          <h2>A TecTop</h2>
         </div>
         <div class="specialists-card">
-          <img src="./home/logotectop.webp" alt="TecTop">
-          <p>Na TecTop, temos um forte compromisso com a qualidade em todos os servicos que oferecemos. Nossa equipe e formada por especialistas altamente capacitados, com dominio em diversas ferramentas e tecnologias do mercado.</p>
+          <img src="./home/logotectop.webp" alt="TecTop" loading="lazy" decoding="async">
+          <p>Com sede Própria e mais de 30 anos de Atuação no mercado de tecnologia, a TecTop possui vasta Experiência em diversos setores, consolidando-se como uma empresa confiável e experiente. Essa longa trajetória demonstra a capacidade da TecTop de se adaptar às mudanças Tecnológicas e garantir Soluções de alta qualidade para seus clientes. Além disso, a empresa já conquistou a confiança de mais de 60 empresas parceiras, fortalecendo ainda mais sua credibilidade e influência no setor.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="home-tools">
+  <section class="home-mvv">
+    <div class="container">
+      <h2>MISSÃO, VISÃO E VALORES - TECTOP</h2>
+      <div class="mvv-block">
+        <h3>Missão (Por que existimos?)</h3>
+        <p>Oferecer suporte e soluções tecnológicas personalizadas, garantindo eficiência, segurança e inovação para empresas que dependem da tecnologia para crescer.</p>
+      </div>
+      <div class="mvv-block">
+        <h3>Visão (Onde queremos chegar?)</h3>
+        <p>Ser reconhecida como uma empresa de TI referência em atendimento técnico de qualidade, oferecendo Soluções ágeis e confiáveis que impulsionam o sucesso dos clientes.</p>
+      </div>
+      <div class="mvv-block">
+        <h3>Valores (O que nos guia?)</h3>
+        <ul>
+          <li>Compromisso com a excelência - Atendimento eficiente, resolvendo problemas de forma ágil e precisa.</li>
+          <li>Tecnologia como Solução - Usamos a inovação para facilitar e otimizar processos empresariais.</li>
+          <li>Parceria e confiança - Criamos relações duradouras com clientes e parceiros.</li>
+          <li>Ética e transparência - Atuamos com honestidade e responsabilidade em cada serviço prestado.</li>
+          <li>Trabalho em equipe - A colaboração e o respeito são a base do nosso crescimento.</li>
+          <li>Segurança da informação - Protegemos os dados e sistemas dos nossos clientes, garantindo conformidade com normas e boas práticas.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-ferramentas">
+    <div class="container">
+          <h2>Ferramentas e Especialidades</h2>
+    </div>
+  </section>
+
+  <section class="home-tools"> 
     <div class="container">
       <div class="tools-marquee" aria-label="Tecnologias">
         <div class="tools-track">
@@ -180,12 +180,12 @@
   <section class="home-stats">
     <div class="container stats-grid">
       <div class="stats-title">
-        <h2>Nossos Numeros</h2>
+        <h2>Nossos números</h2>
       </div>
       <div class="stats-cards">
         <div class="stat">+234 mil Chamados</div>
-        <div class="stat">+200 Implantacoes</div>
-        <div class="stat">+26 anos de Historia</div>
+        <div class="stat">+200 Implantações</div>
+        <div class="stat">+26 anos de História</div>
         <div class="stat">+59 Parceiros</div>
       </div>
     </div>
@@ -194,7 +194,7 @@
   <section class="home-cta">
     <div class="container">
       <h2>Quer saber mais?</h2>
-      <p>Descubra como uma empresa especializada em solucoes de TI pode transformar a eficiencia do seu negocio. Otimize processos, reduza custos e ganhe produtividade com suporte especializado.</p>
+      <p>Descubra como uma empresa especializada em Soluções de TI pode transformar a eficiência do seu negócio. Otimize processos, reduza custos e ganhe produtividade com suporte especializado.</p>
       <a class="btn primary" href="fale-conosco.html">Saiba Mais</a>
     </div>
   </section>
@@ -206,7 +206,7 @@
       <div><span class="badge">Contato</span></div>
       <div><strong>Email:</strong> <a href="mailto:contato@tectop.com.br">contato@tectop.com.br</a></div>
       <div><strong>Telefone:</strong> (62) 3945-2825</div>
-      <div><strong>Endereco:</strong> Sede Propria: Endereco. 9a Av. Qd. 12 Lt. 04 nº 659 - Setor Leste Vila Nova, Goiania/GO Brasil - Cep 74643-080</div>
+      <div><strong>Endereço:</strong> Sede Própria: 9a Av. Qd. 12 Lt. 04 nº 659 - Setor Leste Vila Nova, Goiânia/GO Brasil - Cep 74643-080</div>
     </div>
   </div>
 </footer>
@@ -218,6 +218,15 @@
 <script src="assets/js/site.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 

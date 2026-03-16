@@ -358,16 +358,6 @@
 
   staggerItems.forEach((item) => staggerObserver.observe(item));
 
-  const hero = document.querySelector('.home-awwwards .home-hero');
-  if (hero && !reducedMotion) {
-    const shiftBackground = () => {
-      const ratio = Math.min(1, Math.max(0, window.scrollY / window.innerHeight));
-      hero.style.filter = `hue-rotate(${ratio * 18}deg)`;
-    };
-    window.addEventListener('scroll', shiftBackground, { passive: true });
-    shiftBackground();
-  }
-
   /* ── Smooth scroll for # links ── */
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {

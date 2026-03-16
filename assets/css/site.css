@@ -1535,8 +1535,9 @@ select:focus {
 
 .home-awwwards .home-hero {
   min-height: 100vh;
-  padding: var(--space-hero) 0 20vh;
+  padding: clamp(5rem, 16vh, 10rem) 0 clamp(4rem, 10vh, 8rem);
   position: relative;
+  background: radial-gradient(120% 100% at 90% 0%, var(--color-primary-light) 0%, transparent 55%), linear-gradient(180deg, var(--bg-surface) 0%, var(--bg) 100%);
 }
 
 .home-awwwards .home-hero::after {
@@ -1544,22 +1545,28 @@ select:focus {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: .15;
-  background-image: radial-gradient(circle at 1px 1px, var(--text) 1px, transparent 0);
+  opacity: .08;
+  background-image: radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
   background-size: 3px 3px;
-  mix-blend-mode: soft-light;
 }
 
 .home-awwwards .hero-card {
-  max-width: 980px;
+  max-width: min(100%, 860px);
   margin-inline: 0;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  border: 1px solid var(--border);
 }
 
 .home-awwwards .hero-card h1 {
-  font-size: clamp(5rem, 12vw, 11rem);
-  line-height: .88;
-  letter-spacing: -0.035em;
-  max-width: 10ch;
+  font-size: clamp(2.6rem, 7.8vw, 5.2rem);
+  line-height: .94;
+  letter-spacing: -0.03em;
+  max-width: 12ch;
+  overflow-wrap: anywhere;
+}
+
+.home-awwwards .hero-card p {
+  max-width: 62ch;
 }
 
 .home-awwwards .hero-card h1 .split-word {
@@ -1644,5 +1651,46 @@ select:focus {
     transition: none !important;
     transform: none !important;
     opacity: 1 !important;
+  }
+}
+
+
+.home-awwwards .specialists-card {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--bg-surface) 100%);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.home-awwwards .specialists-card img {
+  filter: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.home-awwwards .home-cta {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.home-awwwards .home-cta::before {
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.home-awwwards .home-cta h2,
+.home-awwwards .home-cta p {
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .home-awwwards .hero-card {
+    padding: 20px;
+  }
+
+  .home-awwwards .hero-card h1 {
+    font-size: clamp(2.2rem, 12vw, 3.9rem);
+    max-width: 100%;
   }
 }

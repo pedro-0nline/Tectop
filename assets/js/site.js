@@ -281,82 +281,85 @@
 
 
   /* ── Awwwards interactions (home) ── */
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (document.body.classList.contains('home-awwwards')) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const progressBar = document.querySelector('.scroll-progress');
-  if (progressBar) {
-    const updateProgress = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const ratio = max > 0 ? window.scrollY / max : 0;
-      progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
-    };
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    updateProgress();
-  }
-
-  const splitTitle = document.querySelector('[data-split]');
-  if (splitTitle) {
-    const words = splitTitle.textContent.trim().split(/\s+/).map((word) => `<span class="split-word">${word}&nbsp;</span>`).join('');
-    splitTitle.innerHTML = words;
-    requestAnimationFrame(() => splitTitle.classList.add('is-ready'));
-  }
-
-  const magneticButtons = document.querySelectorAll('.magnetic');
-  if (!reducedMotion) {
-    magneticButtons.forEach((button) => {
-      button.addEventListener('pointermove', (event) => {
-        const rect = button.getBoundingClientRect();
-        const dx = event.clientX - (rect.left + rect.width / 2);
-        const dy = event.clientY - (rect.top + rect.height / 2);
-        button.style.transform = `translate(${dx * 0.14}px, ${dy * 0.2}px)`;
-      });
-      button.addEventListener('pointerleave', () => {
-        button.style.transform = 'translate(0, 0)';
-      });
-    });
-  }
-
-  const counters = document.querySelectorAll('[data-counter]');
-  const formatCounter = (value) => {
-    if (value >= 1000) return `+${Math.round(value / 1000)} mil`;
-    return `+${value}`;
-  };
-
-  const counterObserver = new IntersectionObserver((entries, obs) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      const el = entry.target;
-      const target = Number(el.getAttribute('data-counter'));
-      const duration = 1200;
-      const start = performance.now();
-
-      const tick = (now) => {
-        const progress = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        el.textContent = formatCounter(Math.round(target * eased));
-        if (progress < 1) requestAnimationFrame(tick);
+    const progressBar = document.querySelector('.scroll-progress');
+    if (progressBar) {
+      const updateProgress = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const ratio = max > 0 ? window.scrollY / max : 0;
+        progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
       };
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    }
 
-      requestAnimationFrame(tick);
-      obs.unobserve(el);
+    const splitTitle = document.querySelector('[data-split]');
+    if (splitTitle) {
+      const words = splitTitle.textContent.trim().split(/\s+/).map((word) => `<span class="split-word">${word}&nbsp;</span>`).join('');
+      splitTitle.innerHTML = words;
+      requestAnimationFrame(() => splitTitle.classList.add('is-ready'));
+    }
+
+    const magneticButtons = document.querySelectorAll('.magnetic');
+    if (!reducedMotion) {
+      magneticButtons.forEach((button) => {
+        button.addEventListener('pointermove', (event) => {
+          const rect = button.getBoundingClientRect();
+          const dx = event.clientX - (rect.left + rect.width / 2);
+          const dy = event.clientY - (rect.top + rect.height / 2);
+          button.style.transform = `translate(${dx * 0.14}px, ${dy * 0.2}px)`;
+        });
+        button.addEventListener('pointerleave', () => {
+          button.style.transform = 'translate(0, 0)';
+        });
+      });
+    }
+
+    const counters = document.querySelectorAll('[data-counter]');
+    const formatCounter = (value) => {
+      if (value >= 1000) return `+${Math.round(value / 1000)} mil`;
+      return `+${value}`;
+    };
+
+    const counterObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const target = Number(el.getAttribute('data-counter'));
+        const duration = 1200;
+        const start = performance.now();
+
+        const tick = (now) => {
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = formatCounter(Math.round(target * eased));
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+
+        requestAnimationFrame(tick);
+        obs.unobserve(el);
+      });
+    }, { threshold: 0.35 });
+
+    counters.forEach((c) => counterObserver.observe(c));
+
+    const staggerItems = document.querySelectorAll('.mvv-block, .stats-cards .stat, .service-card');
+    staggerItems.forEach((item, index) => {
+      item.setAttribute('data-stagger-item', '');
+      item.style.transitionDelay = `${(index % 6) * 70}ms`;
     });
-  }, { threshold: 0.35 });
 
-  counters.forEach((c) => counterObserver.observe(c));
+    const staggerObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+      });
+    }, { threshold: 0.15 });
 
-  const staggerItems = document.querySelectorAll('.mvv-block, .stats-cards .stat, .service-card');
-  staggerItems.forEach((item, index) => {
-    item.setAttribute('data-stagger-item', '');
-    item.style.transitionDelay = `${(index % 6) * 70}ms`;
-  });
+    staggerItems.forEach((item) => staggerObserver.observe(item));
 
-  const staggerObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) entry.target.classList.add('is-visible');
-    });
-  }, { threshold: 0.15 });
-
-  staggerItems.forEach((item) => staggerObserver.observe(item));
+  }
 
   /* ── Smooth scroll for # links ── */
   document.querySelectorAll('a[href^="#"]').forEach(a => {

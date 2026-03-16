@@ -10,6 +10,23 @@
 (function () {
   'use strict';
 
+  const THEME_KEY = 'tectop-theme';
+  const root = document.documentElement;
+
+  const getPreferredTheme = () => {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+
+  const applyTheme = (theme) => {
+    root.setAttribute('data-theme', theme);
+    const toggleIcon = document.querySelector('.theme-toggle .theme-icon');
+    if (toggleIcon) toggleIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+  };
+
+  applyTheme(getPreferredTheme());
+
   /* ── Transition overlay (light overlay for page transitions) ── */
   const createTransitionOverlay = () => {
     const overlay = document.createElement('div');
@@ -81,6 +98,31 @@
 
 
 
+
+
+  /* ── Theme toggle ── */
+  const navControls = document.querySelector('.header-inner');
+  const navToggle = document.querySelector('.nav-toggle');
+  if (navControls) {
+    const themeBtn = document.createElement('button');
+    themeBtn.className = 'theme-toggle';
+    themeBtn.type = 'button';
+    themeBtn.setAttribute('aria-label', 'Alternar tema');
+    themeBtn.innerHTML = '<span class="theme-icon" aria-hidden="true"></span>';
+    if (navToggle && navToggle.parentNode === navControls) {
+      navControls.insertBefore(themeBtn, navToggle);
+    } else {
+      navControls.appendChild(themeBtn);
+    }
+
+    applyTheme(getPreferredTheme());
+
+    themeBtn.addEventListener('click', () => {
+      const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, nextTheme);
+      applyTheme(nextTheme);
+    });
+  }
 
   /* ── Navbar scroll class ── */
   const header = document.querySelector('.site-header');

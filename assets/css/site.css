@@ -1266,3 +1266,230 @@ body.preloader-active > *:not(.preloader) {
   from { transform: translate3d(-2%, 0, 0) scale(1); }
   to { transform: translate3d(2%, -3%, 0) scale(1.04); }
 }
+
+/* ============================================================
+   TECTOP Visual Identity System Overrides
+   ============================================================ */
+html {
+  --bg: #ffffff;
+  --bg-surface: #f4f5f6;
+  --bg-surface-2: #eaecee;
+  --text: #1e2023;
+  --text-muted: #4a4f54;
+  --text-subtle: #7a7f85;
+  --border: #e0e2e5;
+  --color-primary: #3aaa35;
+  --color-primary-dark: #2d8a29;
+  --color-primary-light: #e8f7e8;
+  --text-on-primary: #ffffff;
+}
+
+html[data-theme='dark'] {
+  --bg: #1e2023;
+  --bg-surface: #2a2d30;
+  --bg-surface-2: #383c41;
+  --text: #f0f1f2;
+  --text-muted: #adb2b8;
+  --text-subtle: #6b7177;
+  --border: #3a3f44;
+  --color-primary: #4dc946;
+  --color-primary-dark: #3aaa35;
+  --color-primary-light: #1a3318;
+  --text-on-primary: #ffffff;
+}
+
+:root {
+  --green: var(--color-primary);
+  --green-dark: var(--color-primary-dark);
+  --green-light: var(--color-primary);
+  --green-pale: var(--color-primary-light);
+  --dark: var(--text);
+  --dark2: var(--text);
+  --gray-50: var(--bg-surface);
+  --gray-100: var(--bg-surface);
+  --gray-200: var(--border);
+  --gray-400: var(--text-subtle);
+  --gray-600: var(--text-muted);
+  --gray-800: var(--text);
+  --white: var(--bg);
+  --radius-sm: 8px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
+  --shadow-sm: 0 2px 8px color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+body,
+.site-header,
+.section,
+.card,
+.service-card,
+input,
+textarea,
+select,
+.btn,
+.footer {
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+h1,
+h2 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+h3,
+h4 {
+  font-weight: 600;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.lead,
+.hero-card p,
+.more,
+.text-secondary {
+  color: var(--text-muted);
+}
+
+p,
+li {
+  color: var(--text);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section,
+.home-services,
+.home-specialists,
+.home-mvv,
+.home-ferramentas,
+.home-tools,
+.home-stats,
+.home-cta,
+.home-partners {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+.site-header {
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+
+.brand {
+  padding: 8px;
+  margin: -8px;
+}
+
+.brand-row {
+  gap: 8px;
+}
+
+.site-nav a {
+  color: var(--text);
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.btn,
+.site-nav a:last-child {
+  background: var(--color-primary);
+  color: var(--text-on-primary);
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  border: 1.5px solid var(--color-primary);
+}
+
+.btn:hover,
+.site-nav a:last-child:hover {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.btn.ghost,
+.theme-toggle {
+  background: transparent;
+  border: 1.5px solid var(--color-primary);
+  color: var(--color-primary);
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+
+.btn.ghost:hover,
+.theme-toggle:hover {
+  background: var(--color-primary-light);
+}
+
+.cards,
+.services-grid,
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.card,
+.service-card,
+.stat,
+.mvv-block,
+.specialists-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+input,
+textarea,
+select {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-subtle);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.theme-toggle {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+}

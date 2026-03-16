@@ -1357,13 +1357,16 @@ a {
   text-decoration: none;
 }
 
-p,
-li,
 .lead,
 .hero-card p,
-.footer,
-.more {
+.more,
+.text-secondary {
   color: var(--text-muted);
+}
+
+p,
+li {
+  color: var(--text);
 }
 
 .container {
@@ -1391,47 +1394,14 @@ li,
   border-bottom: 1px solid var(--border);
 }
 
+
 .brand {
-  padding: 0 16px 0 0;
+  padding: 8px;
+  margin: -8px;
 }
 
 .brand-row {
-  position: relative;
-  gap: 12px;
-}
-
-.brand-row::before {
-  content: '';
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: var(--color-primary);
-}
-
-.brand-word,
-.brand-sub {
-  display: none;
-}
-
-.brand::after {
-  content: 'TECTOP';
-  color: var(--text);
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
-.brand::before {
-  content: 'TECNOLOGIA';
-  color: var(--text-muted);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  order: 2;
-}
-
-.brand-logo {
-  display: none;
+  gap: 8px;
 }
 
 .site-nav a {
@@ -1486,8 +1456,7 @@ li,
 .service-card,
 .stat,
 .mvv-block,
-.specialists-card,
-.home-cta .container {
+.specialists-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -1523,5 +1492,4 @@ select:focus {
 
 .footer {
   border-top: 1px solid var(--border);
-  background: var(--bg-surface);
 }

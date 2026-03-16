@@ -17,18 +17,24 @@
   'use strict';
 
   /* ── Transition overlay com monograma ── */
-  const createTransitionOverlay = () => {
-    const overlay = document.createElement('div');
-    overlay.className = 'transition-overlay';
-    overlay.innerHTML = `
-      <div class="transition-overlay__logo">
-  <img src="/home/logo.svg" alt="Tectop">
-</div>
+  // Reutiliza overlay já inserido pelo inline script no <head>, ou cria novo
+  let transitionOverlay = document.getElementById('transition-overlay');
+  if (!transitionOverlay) {
+    transitionOverlay = document.createElement('div');
+    transitionOverlay.id = 'transition-overlay';
+    transitionOverlay.className = 'transition-overlay';
+    document.body.appendChild(transitionOverlay);
+  }
+  // Sempre injeta o conteúdo (logo + barra) — o overlay pode ter sido criado vazio pelo inline script
+  if (!transitionOverlay.querySelector('.transition-overlay__logo')) {
+    transitionOverlay.innerHTML = `
+      <div class="transition-overlay__inner">
+        <div class="transition-overlay__logo">
+          <img src="./home/logotectop.webp" alt="Tectop" style="width:72px;height:72px;object-fit:contain;display:block;">
+        </div>
+        <div class="transition-overlay__bar"></div>
       </div>`;
-    document.body.appendChild(overlay);
-    return overlay;
-  };
-  const transitionOverlay = createTransitionOverlay();
+  }
 
   /* ── Preloader logic ── */
   const preloader = document.querySelector('.preloader');
@@ -130,31 +136,40 @@
   const midTransition = sessionStorage.getItem('page-transition');
   if (midTransition) {
     sessionStorage.removeItem('page-transition');
+
+    // Aplica 'covered' de forma síncrona ANTES do primeiro paint para evitar flash
     transitionOverlay.classList.add('covered');
     document.body.classList.add('page-entering');
 
+    // Garante que o overlay está visível antes de qualquer outra coisa
+    // usando dois rAF para garantir que o browser pintou o overlay primeiro
     const revealPage = () => {
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          transitionOverlay.classList.remove('covered');
-          transitionOverlay.classList.add('leaving');
-          window.setTimeout(() => {
-            transitionOverlay.classList.remove('leaving');
-            document.body.classList.remove('page-entering');
-          }, 750);
-        });
-      });
+      transitionOverlay.classList.remove('covered');
+      transitionOverlay.classList.add('leaving');
+      window.setTimeout(() => {
+        transitionOverlay.classList.remove('leaving');
+        document.body.classList.remove('page-entering');
+      }, 750);
     };
 
     const waitForImages = () => {
       const imgs = Array.from(document.images).filter(img =>
-        img.getAttribute('loading') !== 'lazy' || img.complete
+        !img.complete && img.getAttribute('loading') !== 'lazy'
       );
+      if (imgs.length === 0) {
+        // Nenhuma imagem pendente: revela após um pequeno delay mínimo para garantir o paint
+        const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+        fontsReady.then(() => {
+          window.clearTimeout(fallback);
+          window.requestAnimationFrame(() => window.requestAnimationFrame(revealPage));
+        });
+        return;
+      }
       const decodes = imgs.map(img => img.decode ? img.decode().catch(() => {}) : Promise.resolve());
       const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
       Promise.all([...decodes, fontsReady]).then(() => {
         window.clearTimeout(fallback);
-        window.requestAnimationFrame(() => revealPage());
+        window.requestAnimationFrame(() => window.requestAnimationFrame(revealPage));
       });
     };
 
@@ -175,7 +190,7 @@
   `;
   document.head.appendChild(revealStyle);
 
-  document.querySelectorAll('.card, .service-card, .stat, .gallery img, .logo-grid img').forEach((el, i) => {
+  document.querySelectorAll('.card, .service-card, .gallery img, .logo-grid img').forEach((el, i) => {
     el.classList.add('reveal');
     el.style.transitionDelay = `${(i % 6) * 60}ms`;
   });

@@ -15,7 +15,9 @@
   <script>if(localStorage.getItem('preloaderShown')){document.documentElement.classList.add('preloader-skip');}if(sessionStorage.getItem('page-transition')){document.documentElement.classList.add('page-covered');}</script>
 <script>(function(){var key='tectop-theme';var saved=localStorage.getItem(key);var theme=(saved==='light'||saved==='dark')?saved:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',theme);}());</script>
 </head>
-<body class="page" style="--page-bg:url(./home/background.webp)">
+<body class="page home-awwwards" style="--page-bg:url(./home/background.webp)">
+<a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+<div class="scroll-progress" aria-hidden="true"></div>
 <div class="preloader" role="status" aria-live="polite" aria-label="Carregamento da página">
   <div class="preloader-grid"></div>
   <div class="preloader-core">
@@ -51,7 +53,7 @@
   </picture>
 </div>
 
-<main>
+<main id="conteudo-principal">
   <section class="home-hero">
     <div class="home-hero-media">
       
@@ -62,15 +64,19 @@
         <span class="hero-tagline">de excelência em Soluções de TI</span>
       </div>
       <div class="hero-card">
-        <h1>Gestão de TI, Consultoria e Serviços Especializados</h1>
+        <h1 data-split>Gestão de TI, Consultoria e Serviços Especializados</h1>
         <p>Oferecemos soluções tecnológicas sob medida para o seu negócio. Nossa equipe está pronta para auxiliar com suporte, otimização de sistemas e segurança digital, garantindo que sua empresa funcione de forma eficiente e segura.</p>
         <div class="hero-actions">
-          <a class="btn primary" href="fale-conosco.html">Saiba mais</a>
-          <a class="btn ghost" href="https://wa.me/556239452825" target="_blank" rel="noreferrer">Falar no WhatsApp</a>
+          <a class="btn primary magnetic" href="fale-conosco.html"><span>Saiba mais</span></a>
+          <a class="btn ghost magnetic" href="https://wa.me/556239452825" target="_blank" rel="noreferrer"><span>Falar no WhatsApp</span></a>
         </div>
       </div>
     </div>
   </section>
+
+  <div class="hero-marquee" aria-hidden="true">
+    <div class="hero-marquee-track">TECTOP • TECNOLOGIA E INOVAÇÃO • INFRAESTRUTURA • CLOUD • CIBERSEGURANÇA • SUPORTE PREMIUM •</div>
+  </div>
 
   <section class="home-specialists">
     <div class="container">
@@ -184,10 +190,10 @@
         <h2>Nossos números</h2>
       </div>
       <div class="stats-cards">
-        <div class="stat">+234 mil Chamados</div>
-        <div class="stat">+200 Implantações</div>
-        <div class="stat">+26 anos de História</div>
-        <div class="stat">+59 Parceiros</div>
+        <div class="stat"><strong data-counter="234000">0</strong><span>Chamados</span></div>
+        <div class="stat"><strong data-counter="200">0</strong><span>Implantações</span></div>
+        <div class="stat"><strong data-counter="26">0</strong><span>Anos de História</span></div>
+        <div class="stat"><strong data-counter="59">0</strong><span>Parceiros</span></div>
       </div>
     </div>
   </section>
@@ -202,6 +208,7 @@
 </main>
 
 <footer class="footer">
+  <div class="footer-brand-display" aria-hidden="true">TECTOP</div>
   <div class="container">
     <div class="list">
       <div><span class="badge">Contato</span></div>

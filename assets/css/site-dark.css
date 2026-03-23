@@ -136,6 +136,7 @@ body {
 
 /* LEAVING: overlay desaparece em fade, revelando a nova página */
 .transition-overlay.leaving {
+  transform: translateY(0);
   opacity: 0;
   transition: opacity 600ms cubic-bezier(0.65, 0.05, 0.35, 0.95);
   pointer-events: none;
@@ -143,8 +144,8 @@ body {
 
 /* Conteúdo da nova página desliza para cima ao ser revelado */
 @keyframes page-content-enter {
-  from { transform: translateY(36px); }
-  to   { transform: none; }
+  from { opacity: .01; }
+  to   { opacity: 1; }
 }
 
 body.page-entering > main {
@@ -792,6 +793,18 @@ body.page .hero::after {
   box-shadow: 0 0 0 4px rgba(74,222,128,.15);
 }
 
+.service-explainer {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 22px;
+  margin-bottom: 36px;
+}
+
+.service-card strong {
+  color: #e8e8e2;
+  font-weight: 700;
+}
+
 /* ══════════════════════════════════════════
    HOME TOOLS
 ══════════════════════════════════════════ */
@@ -1143,6 +1156,7 @@ body.page .hero::after {
 
   .services-grid { grid-template-columns: 1fr 1fr; }
   .cards { grid-template-columns: 1fr 1fr; }
+  .service-explainer { grid-template-columns: 1fr; }
   .home-mvv .container { grid-template-columns: 1fr; }
 }
 

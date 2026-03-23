@@ -36,6 +36,28 @@
       </div>`;
   }
 
+  const isHistoryTraversal = () => {
+    const navEntry = performance.getEntriesByType?.('navigation')?.[0];
+    return (navEntry && navEntry.type === 'back_forward')
+      || (performance.navigation && performance.navigation.type === 2);
+  };
+
+  const resetTransitionState = () => {
+    sessionStorage.removeItem('page-transition');
+    document.body.classList.remove('page-transitioning', 'page-entering');
+    transitionOverlay.classList.remove('visible', 'covered', 'leaving');
+    transitionOverlay.style.opacity = '';
+  };
+
+  if (isHistoryTraversal()) {
+    resetTransitionState();
+  }
+
+  window.addEventListener('pageshow', (event) => {
+    if (!event.persisted && !isHistoryTraversal()) return;
+    resetTransitionState();
+  });
+
   /* ── Preloader logic ── */
   const preloader = document.querySelector('.preloader');
   const isHome = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
@@ -140,10 +162,13 @@
     // Aplica 'covered' de forma síncrona ANTES do primeiro paint para evitar flash
     transitionOverlay.classList.add('covered');
     document.body.classList.add('page-entering');
+    let pageRevealSettled = false;
 
     // Garante que o overlay está visível antes de qualquer outra coisa
     // usando dois rAF para garantir que o browser pintou o overlay primeiro
     const revealPage = () => {
+      if (pageRevealSettled) return;
+      pageRevealSettled = true;
       transitionOverlay.classList.remove('covered');
       transitionOverlay.classList.add('leaving');
       window.setTimeout(() => {
@@ -196,12 +221,21 @@
   });
   document.querySelectorAll('.home-hero-content').forEach(el => el.classList.add('reveal-left'));
 
+  const shouldSkipViewportReveal = document.body.classList.contains('page-entering');
+  if (shouldSkipViewportReveal) {
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+      el.classList.add('visible');
+    });
+  }
+
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
     });
   }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
+  if (!shouldSkipViewportReveal) {
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => revealObserver.observe(el));
+  }
 
   /* ── Smooth scroll for # links (fallback — Lenis substitui após load) ── */
   document.querySelectorAll('a[href^="#"]').forEach(a => {

@@ -49,14 +49,61 @@
     transitionOverlay.style.opacity = '';
   };
 
+  const isCpanelFileManagerPreview = () => {
+    const path = window.location.pathname || '';
+    return /\/frontend\/jupiter\/filemanager\//i.test(path) || /\/cpsess\d+\//i.test(path);
+  };
+
+  // Transições de página desativadas por estabilidade (evita piscadas/travamentos).
+  const enablePageTransitions = false;
+  const shouldDisablePageTransitions = !enablePageTransitions || isCpanelFileManagerPreview();
+
+  const hasVisibleTransitionState = () => {
+    return document.body.classList.contains('page-transitioning')
+      || document.body.classList.contains('page-entering')
+      || transitionOverlay.classList.contains('visible')
+      || transitionOverlay.classList.contains('covered')
+      || transitionOverlay.classList.contains('leaving');
+  };
+
+  const clearStaleTransitionState = () => {
+    // Só limpa estado preso quando NÃO existe transição legítima em andamento.
+    if (!sessionStorage.getItem('page-transition') && hasVisibleTransitionState()) {
+      resetTransitionState();
+    }
+  };
+
   if (isHistoryTraversal()) {
     resetTransitionState();
+  } else {
+    clearStaleTransitionState();
   }
 
+  // Em navegação de histórico (voltar/avançar), alguns navegadores podem
+  // restaurar a página do BFCache com classes antigas ainda aplicadas.
+  // Também tratamos estados visuais presos sem apagar transições legítimas.
   window.addEventListener('pageshow', (event) => {
-    if (!event.persisted && !isHistoryTraversal()) return;
-    resetTransitionState();
+    // Em navegação normal, não mexemos no estado para evitar piscar
+    // durante o page-entry legítimo.
+    if (event.persisted || isHistoryTraversal()) {
+      resetTransitionState();
+    }
   });
+
+  // Ao sair da página, limpamos o estado visual para evitar snapshot com
+  // overlay ativo quando a página for restaurada do cache de navegação.
+  window.addEventListener('pagehide', (event) => {
+    // Evita piscar na navegação normal: só força limpeza quando a página
+    // entra no BFCache (persisted) ou quando transições estão desativadas.
+    if (!event.persisted && !shouldDisablePageTransitions) return;
+    document.body.classList.remove('page-transitioning', 'page-entering');
+    transitionOverlay.classList.remove('visible', 'covered', 'leaving');
+    transitionOverlay.style.opacity = '';
+  });
+
+  if (shouldDisablePageTransitions) {
+    resetTransitionState();
+  }
 
   /* ── Preloader logic ── */
   const preloader = document.querySelector('.preloader');
@@ -136,6 +183,7 @@
       const url = new URL(href, window.location.href);
       if (url.pathname === window.location.pathname && url.hash) return;
       if (url.pathname === window.location.pathname && !url.hash) return;
+      if (shouldDisablePageTransitions) return;
       event.preventDefault();
       if (document.body.classList.contains('page-transitioning')) return;
       document.body.classList.add('page-transitioning');
@@ -155,7 +203,7 @@
   });
 
   /* ── Page-entry reveal ── */
-  const midTransition = sessionStorage.getItem('page-transition');
+  const midTransition = shouldDisablePageTransitions ? null : sessionStorage.getItem('page-transition');
   if (midTransition) {
     sessionStorage.removeItem('page-transition');
 

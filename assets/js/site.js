@@ -49,13 +49,44 @@
     transitionOverlay.style.opacity = '';
   };
 
+  const hasVisibleTransitionState = () => {
+    return document.body.classList.contains('page-transitioning')
+      || document.body.classList.contains('page-entering')
+      || transitionOverlay.classList.contains('visible')
+      || transitionOverlay.classList.contains('covered')
+      || transitionOverlay.classList.contains('leaving');
+  };
+
+  const clearStaleTransitionState = () => {
+    // Só limpa estado preso quando NÃO existe transição legítima em andamento.
+    if (!sessionStorage.getItem('page-transition') && hasVisibleTransitionState()) {
+      resetTransitionState();
+    }
+  };
+
   if (isHistoryTraversal()) {
     resetTransitionState();
+  } else {
+    clearStaleTransitionState();
   }
 
+  // Em navegação de histórico (voltar/avançar), alguns navegadores podem
+  // restaurar a página do BFCache com classes antigas ainda aplicadas.
+  // Também tratamos estados visuais presos sem apagar transições legítimas.
   window.addEventListener('pageshow', (event) => {
-    if (!event.persisted && !isHistoryTraversal()) return;
-    resetTransitionState();
+    if (event.persisted || isHistoryTraversal()) {
+      resetTransitionState();
+      return;
+    }
+    clearStaleTransitionState();
+  });
+
+  // Ao sair da página, limpamos o estado visual para evitar snapshot com
+  // overlay ativo quando a página for restaurada do cache de navegação.
+  window.addEventListener('pagehide', () => {
+    document.body.classList.remove('page-transitioning', 'page-entering');
+    transitionOverlay.classList.remove('visible', 'covered', 'leaving');
+    transitionOverlay.style.opacity = '';
   });
 
   /* ── Preloader logic ── */

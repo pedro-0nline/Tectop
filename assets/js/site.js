@@ -81,11 +81,11 @@
   // restaurar a página do BFCache com classes antigas ainda aplicadas.
   // Também tratamos estados visuais presos sem apagar transições legítimas.
   window.addEventListener('pageshow', (event) => {
+    // Em navegação normal, não mexemos no estado para evitar piscar
+    // durante o page-entry legítimo.
     if (event.persisted || isHistoryTraversal()) {
       resetTransitionState();
-      return;
     }
-    clearStaleTransitionState();
   });
 
   // Ao sair da página, limpamos o estado visual para evitar snapshot com

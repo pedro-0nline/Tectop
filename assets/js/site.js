@@ -183,6 +183,7 @@
       if (url.pathname === window.location.pathname && !url.hash) return;
       if (shouldDisablePageTransitions) return;
       event.preventDefault();
+      if (shouldDisablePageTransitions) return;
       if (document.body.classList.contains('page-transitioning')) return;
       document.body.classList.add('page-transitioning');
       transitionOverlay.classList.add('visible');

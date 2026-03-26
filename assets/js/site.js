@@ -90,7 +90,10 @@
 
   // Ao sair da página, limpamos o estado visual para evitar snapshot com
   // overlay ativo quando a página for restaurada do cache de navegação.
-  window.addEventListener('pagehide', () => {
+  window.addEventListener('pagehide', (event) => {
+    // Evita piscar na navegação normal: só força limpeza quando a página
+    // entra no BFCache (persisted) ou quando transições estão desativadas.
+    if (!event.persisted && !shouldDisablePageTransitions) return;
     document.body.classList.remove('page-transitioning', 'page-entering');
     transitionOverlay.classList.remove('visible', 'covered', 'leaving');
     transitionOverlay.style.opacity = '';
@@ -178,6 +181,7 @@
       const url = new URL(href, window.location.href);
       if (url.pathname === window.location.pathname && url.hash) return;
       if (url.pathname === window.location.pathname && !url.hash) return;
+      if (shouldDisablePageTransitions) return;
       event.preventDefault();
       if (shouldDisablePageTransitions) return;
       if (document.body.classList.contains('page-transitioning')) return;

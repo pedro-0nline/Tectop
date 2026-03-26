@@ -54,7 +54,9 @@
     return /\/frontend\/jupiter\/filemanager\//i.test(path) || /\/cpsess\d+\//i.test(path);
   };
 
-  const shouldDisablePageTransitions = isCpanelFileManagerPreview();
+  // Transições de página desativadas por estabilidade (evita piscadas/travamentos).
+  const enablePageTransitions = false;
+  const shouldDisablePageTransitions = !enablePageTransitions || isCpanelFileManagerPreview();
 
   const hasVisibleTransitionState = () => {
     return document.body.classList.contains('page-transitioning')
